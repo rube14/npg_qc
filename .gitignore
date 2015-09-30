@@ -7,3 +7,5 @@ src/*/build/*
 *~
 bower_components
 .project
+.includepath
+
