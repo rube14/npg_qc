@@ -1,4 +1,4 @@
-package npg_qc_viewer::TransferObjects::ProductMetrics4RunTO;
+package npg_qc_viewer::Util::TransferObject;
 
 use Moose;
 use MooseX::StrictConstructor;
@@ -21,7 +21,7 @@ deplexing lims rnd gclp flowcell
 
 =head1 NAME
 
-npg_qc_viewer::TransferObjects::ProductMetrics4RunTO
+npg_qc_viewer::Util::TransferObject
 
 =head1 SYNOPSIS
 
@@ -75,6 +75,17 @@ has 'manual_qc'    => (
   required => 0,
 );
 
+=head2 lib_manual_qc
+
+Result of library manual qc.
+
+=cut
+has 'lib_manual_qc'    => (
+  isa      => 'Bool',
+  is       => 'rw',
+  required => 0,
+);
+
 =head2 study_name
 
 Name study lims
@@ -103,6 +114,17 @@ Name of sample lims
 
 =cut
 has 'sample_name' => (
+  isa      => 'Maybe[Str]',
+  is       => 'rw',
+  required => 0,
+);
+
+=head2 supplier_sample_name
+
+Supplier sample name
+
+=cut
+has 'supplier_sample_name' => (
   isa      => 'Maybe[Str]',
   is       => 'rw',
   required => 0,
@@ -181,7 +203,11 @@ Resets object's attributes as fits for a pool
 =cut
 sub reset_as_pool {
   my $self = shift;
-  for my $attr (qw/tag_sequence study_name id_sample_lims sample_name/) {
+  for my $attr (qw/tag_sequence
+                   study_name
+                   id_sample_lims
+                   sample_name
+                   supplier_sample_name/) {
     $self->$attr(undef);
   }
   $self->id_library_lims($self->id_pool_lims);
@@ -197,6 +223,17 @@ sub provenance {
   my $self = shift;
   my @p = grep { $_ } ($self->id_library_lims, $self->sample_name, $self->study_name);
   return @p;
+}
+
+=head2 sample_name4display
+
+Sometimes users prefer supplier_sample_name to sample_name.
+Returns supplier_sample_name, falls back to sample_name.
+
+=cut
+sub sample_name4display {
+  my $self = shift;
+  return $self->supplier_sample_name || $self->sample_name;
 }
 
 __PACKAGE__->meta->make_immutable;
@@ -218,7 +255,11 @@ __END__
 
 =item namespace::autoclean
 
-=item npg_tracking::util::types
+=item npg_tracking::glossary::run
+
+=item npg_tracking::glossary::lane
+
+=item npg_tracking::glossary::tag
 
 =back
 
